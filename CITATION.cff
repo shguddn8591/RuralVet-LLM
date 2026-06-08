@@ -1,0 +1,79 @@
+cff-version: 1.2.0
+type: software
+title: "RuralVet-LLM: Korean Rural Veterinary AI Assistant via LoRA/QLoRA Fine-tuning and Multi-method Quantization"
+abstract: |
+  A comprehensive research project implementing Phase 0-2 experiments on Korean-language
+  veterinary AI assistant using Qwen3.5-4B. This work encompasses zero-shot baseline measurement,
+  6-experiment LoRA/QLoRA fine-tuning (3 ranks × 2 methods), and 7-way quantization comparison
+  (FP16, Float8, 8bit, 4bit-NF4, 4bit-PureFloat, 2bit-HQQ) with real-world deployment scenario
+  analysis for rural areas (VRAM ≤5.4GB achieved).
+
+authors:
+  - family-names: Roh
+    given-names: Hyeong-Woo
+    email: uslm8591@gmail.com
+
+date-released: 2026-06-08
+version: "1.0.0"
+license: MIT
+repository-code: "https://github.com/YOUR_USERNAME/RuralVet-LLM"
+repository-artifact: "https://huggingface.co/YOUR_USERNAME/RuralVet-LLM"
+
+keywords:
+  - LoRA
+  - QLoRA
+  - Quantization
+  - NF4
+  - HQQ
+  - Korean Language Model
+  - Veterinary AI
+  - LLM Fine-tuning
+  - Rural Deployment
+  - ROUGE-L
+  - BERTScore
+  - Qwen3.5
+
+references:
+  - authors:
+      - family-names: Hu
+        given-names: Edward
+      - family-names: Shen
+        given-names: Yelong
+      - family-names: Wallis
+        given-names: Phillip
+    title: "LoRA: Low-Rank Adaptation of Large Language Models"
+    type: conference-paper
+    year: 2021
+
+  - authors:
+      - family-names: Dettmers
+        given-names: Tim
+      - family-names: Pagnoni
+        given-names: Artidoro
+    title: "QLoRA: Efficient Finetuning of Quantized LLMs"
+    type: conference-paper
+    year: 2023
+
+  - authors:
+      - family-names: Alibi
+        given-names: Gal
+      - family-names: Caciularu
+        given-names: Avi
+    title: "Half-Quadratic Quantization of Large Machine Learning Models"
+    type: conference-paper
+    year: 2024
+
+contact:
+  - name: "Hyeong-Woo Roh"
+    email: "uslm8591@gmail.com"
+
+funding:
+  - funder:
+      name: "Google Colab (Free GPU Resources)"
+
+acknowledgments: |
+  We thank:
+  - Alibaba Qwen Team for Qwen3.5-4B model
+  - HuggingFace for transformers, peft, bitsandbytes libraries
+  - Google Colab for GPU computing resources
+  - Rural Agriculture Bureau and Veterinary Schools for domain context
