@@ -9,19 +9,20 @@ RuralVet-LLM is a research project on parameter-efficient fine-tuning and quanti
 **Base Model**: Qwen/Qwen3.5-4B  
 **Training Data**: 2,476 veterinary records in Korean  
 **Evaluation Data**: 242 Q&A pairs  
+**Duration**: December 2025 - June 2026
 
 ## Results
 
-| Phase | Method | ROUGE-L | BERTScore | Status |
-|-------|--------|---------|-----------|--------|
+| Phase | Method | ROUGE-L | BERTScore | Description |
+|-------|--------|---------|-----------|-------------|
 | Phase 0 | Zero-shot | 0.0897 | 0.6503 | Baseline |
-| Phase 1 | LoRA r=16 | 0.1655 | 0.6737 | Optimal |
-| Phase 2 | 4bit NF4 | 0.1583 | 0.6480 | Deployment |
+| Phase 1 | LoRA rank=16 | 0.1655 | 0.6737 | Optimal (+84.5% improvement) |
+| Phase 2 | 4bit NF4 | 0.1583 | 0.6480 | Deployment optimized |
 
-**Key Metrics (Phase 2)**:
-- Model size: 5.4GB (4bit NF4)
+**Deployment Metrics (Phase 2)**:
+- Model size: 5.4 GB (4bit NF4 quantization)
 - Inference speed: 36.0 tokens/second
-- VRAM: 5.4GB (rural deployment viable)
+- VRAM requirement: 5.4 GB (viable for rural scenarios)
 
 ## Quick Start
 
@@ -33,54 +34,56 @@ cd RuralVet-LLM
 pip install -r requirements.txt
 ```
 
-### Run Notebooks
+### Run Experiments
 
-**Phase 0 & Phase 1** (Zero-shot + LoRA/QLoRA):
+**Phase 0 and Phase 1** (Zero-shot baseline + LoRA/QLoRA fine-tuning):
 ```bash
 jupyter notebook notebooks/00_phase0_phase1.ipynb
 ```
 
-**Phase 2** (Quantization comparison):
+**Phase 2** (Quantization comparison - 7 methods):
 ```bash
 jupyter notebook notebooks/02_phase2_quantization.ipynb
 ```
 
-Both notebooks run on Google Colab (V100 recommended).
+Both notebooks are executable on Google Colab (V100 GPU recommended).
 
-## Experiment Design
+## Experimental Design
 
-**Phase 0**: Zero-shot baseline measurement
-- Model: Qwen3.5-4B FP16
+**Phase 0: Zero-shot Baseline**
+- Model: Qwen3.5-4B in FP16
 - Evaluation: 242 test samples
+- Metrics: ROUGE-L and BERTScore
 
-**Phase 1**: LoRA/QLoRA fine-tuning
-- 6 experiments: LoRA/QLoRA × Rank (4, 8, 16)
-- Training: 2,171 samples, 3 epochs
-- Winner: LoRA rank=16 (+84.5% ROUGE-L improvement)
+**Phase 1: Fine-tuning Methods**
+- 6 experiments: LoRA and QLoRA with ranks 4, 8, 16
+- Training data: 2,171 samples, 3 epochs
+- Result: LoRA rank=16 achieved best performance (+84.5% ROUGE-L improvement)
 
-**Phase 2**: Quantization comparison
-- 7 methods: FP16, Float8, 8bit, 4bit-NF4, 4bit-PureFloat, 2bit-HQQ
-- Metrics: ROUGE-L, BERTScore, VRAM, inference speed
-- Pareto analysis for deployment scenarios
+**Phase 2: Quantization Comparison**
+- 7 quantization methods: FP16, Float8, 8bit-Standard, 8bit-TorchAO, 4bit-NF4, 4bit-PureFloat, 2bit-HQQ
+- Evaluation: ROUGE-L, BERTScore, VRAM usage, inference speed
+- Analysis: Pareto frontier for deployment trade-offs
 
 ## Evaluation Metrics
 
-- ROUGE-L: Korean morphological analysis with kiwipiepy
-- BERTScore: klue/roberta-large embeddings
-- Deployment: VRAM usage and inference speed
+- **ROUGE-L**: Longest Common Subsequence F1 with Korean morphological analysis (kiwipiepy)
+- **BERTScore**: Semantic similarity using klue/roberta-large embeddings
+- **Deployment Metrics**: VRAM consumption and tokens per second
 
-## Technical Issues
+## Technical Findings
 
-**Fixed**:
-- Chat template bug in Phase 2 evaluation (corrected with re-run)
-- Greedy decoding for reproducibility
+**Successfully Resolved**:
+- Chat template application bug in Phase 2 (corrected and re-evaluated)
+- Reproducibility through greedy decoding strategy
+- Checkpoint resume system for 12-hour runtime limits
 
-**Not Resolved**:
-- GGUF conversion failure (Qwen3.5 architecture incompatibility)
-- Low absolute performance (0.1655 ROUGE-L)
-- No clinical validation
+**Known Issues**:
+- GGUF conversion fails due to Qwen3.5 hybrid architecture incompatibility
+- Absolute performance (0.1655 ROUGE-L) below practical deployment threshold
+- No clinical validation with veterinary experts
 
-## Files
+## Project Structure
 
 ```
 RuralVet-LLM/
@@ -96,22 +99,29 @@ RuralVet-LLM/
 ├── docs/
 │   └── README.md
 ├── results/
-│   ├── RuralVet_LLM_최종보고서.md (224KB)
+│   ├── RuralVet_LLM_final_report.md (224 KB)
 │   └── README.md
-└── src/ (Python package structure)
+└── src/
+    ├── data/
+    ├── models/
+    ├── eval/
+    └── utils/
 ```
 
-## Requirements
+## System Requirements
 
-Python 3.10+, PyTorch 2.0+
+- Python 3.10+
+- PyTorch 2.0+
+- 6 GB VRAM (for 4bit quantized models)
+- 13 GB system RAM (Google Colab environment)
 
-See `requirements.txt` for full dependency list.
+See requirements.txt for complete dependency list.
 
 ## Citation
 
 ```bibtex
-@software{rh_ruravet_llm_2026,
-  title = {RuralVet-LLM: Korean Rural Veterinary AI with LoRA/QLoRA Fine-tuning and Quantization},
+@software{roh_ruravet_llm_2026,
+  title = {RuralVet-LLM: Korean Rural Veterinary AI with LoRA/QLoRA Fine-tuning and Multi-method Quantization},
   author = {Roh, Hyeong-Woo},
   year = {2026},
   month = {6},
@@ -125,23 +135,25 @@ MIT License - See LICENSE file for details.
 
 ## Limitations
 
-- Training data limited to 2,171 samples
-- No clinical expert validation
-- GGUF conversion not supported (Qwen3.5 architecture issue)
-- Model performance below practical deployment standards
+- Training data size (2,171 samples) insufficient for production deployment
+- No clinical validation with domain experts
+- GGUF conversion not supported (Qwen3.5 architecture compatibility issue)
+- Absolute model performance below industry standards for clinical applications
 
-## Future Work
+## Future Research
 
-1. Data scale-up to 5,000+ veterinary Q&A pairs
-2. RAG integration with veterinary knowledge bases
-3. Clinical validation with domain experts
-4. Model switching for GGUF compatibility
+1. Expand training data to 5,000+ veterinary Q&A pairs with expert review
+2. Integrate Retrieval-Augmented Generation (RAG) with veterinary knowledge bases
+3. Conduct clinical validation with licensed veterinarians
+4. Explore compatible model architectures for GGUF conversion
+5. Implement field deployment pilot with rural veterinary centers
 
 ## Contact
 
-Author: 노형우 (Hyeong-Woo Roh)  
-Email: uslm8591@gmail.com
+Author: Hyeong-Woo Roh  
+Email: uslm8591@gmail.com  
+GitHub: https://github.com/shguddn8591
 
 ---
 
-**Complete research report**: See `results/RuralVet_LLM_최종보고서.md` (224KB, 10 chapters, full analysis)
+**Complete Technical Report**: See results/RuralVet_LLM_final_report.md (224 KB, 10 chapters with comprehensive analysis)
